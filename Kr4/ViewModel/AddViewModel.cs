@@ -21,6 +21,10 @@ namespace Kr4.ViewModel
         private const int AddGalaxy = 3;
         private const int AddGalaxyType = 4;
 
+        private IEventAgregator eventAgregator;
+
+        private string ChangedList = "";
+
         public int SelectedTab { get; set; }
         public string Name { get; set; }
         public double Size { get; set; }
@@ -37,7 +41,22 @@ namespace Kr4.ViewModel
 
         public GalaxyType GalaxyType { get; set; }
 
+        public AddViewModel(IEventAgregator eventAgregator)
+        {
+            this.eventAgregator = eventAgregator;
+        }
 
+        private void clearFields()
+        {
+            Name = string.Empty;
+            Size = 0;
+            OrbitalPeriod = 0;
+            DistanceFromEarth = 0;
+            Age = 0;
+            Luminosity = 0;
+            SpectralClass = new SpectralClass() { Name = "none" };
+            GalaxyType = new GalaxyType() { Name = "none" };
+        }
         public List<GalaxyType> GalaxyTypes
         {
             get
@@ -46,6 +65,7 @@ namespace Kr4.ViewModel
                 galaxyType.Insert(0, new GalaxyType() { Name = "none" });
                 return galaxyType;
             }
+            
         }
 
         public List<SpectralClass> SpectralClasses
@@ -80,6 +100,7 @@ namespace Kr4.ViewModel
                             {
                                 Xceed.Wpf.Toolkit.MessageBox.Show("Fill out the required field Name", "",
                                     MessageBoxButton.OK, MessageBoxImage.Error);
+                                return;
                             }
 
                             break;
@@ -96,6 +117,7 @@ namespace Kr4.ViewModel
                             {
                                 Xceed.Wpf.Toolkit.MessageBox.Show("Fill out the required field Name and Spectral Class",
                                     "", MessageBoxButton.OK, MessageBoxImage.Error);
+                                return;
                             }
 
                             break;
@@ -103,11 +125,13 @@ namespace Kr4.ViewModel
                             if (Name != "")
                             {
                                 DatabaseLocator.Context.SpectralClasses.Add(new SpectralClass() { Name = this.Name });
+                                ChangedList = nameof(SpectralClasses);
                             }
                             else
                             {
                                 Xceed.Wpf.Toolkit.MessageBox.Show("Fill out the required field Name", "",
                                     MessageBoxButton.OK, MessageBoxImage.Error);
+                                return;
 
                             }
 
@@ -125,22 +149,36 @@ namespace Kr4.ViewModel
                             {
                                 Xceed.Wpf.Toolkit.MessageBox.Show("Fill out the required field Name and Type", "",
                                     MessageBoxButton.OK, MessageBoxImage.Error);
+                                return;
                             }
 
                             break;
                         case AddGalaxyType:
                             if (Name != "")
                             {
+                                ChangedList = nameof(GalaxyTypes);
                                 DatabaseLocator.Context.GalaxysTypes.Add(new GalaxyType() { Name = this.Name });
+                            }
+                            else
+                            {
+                                Xceed.Wpf.Toolkit.MessageBox.Show("Fill out the required field Name", "",
+                                    MessageBoxButton.OK, MessageBoxImage.Error);
+                                return;
                             }
 
                             break;
                     }
-
+                 //   eventAgregator.NotifyDBChanged();
+                   
                     DatabaseLocator.Context.SaveChanges();
+                 if(ChangedList != "")
+                    RaisePropertiesChanged(ChangedList);
+                 clearFields();
                 });
             }
 
         }
+
+       
     }
 }

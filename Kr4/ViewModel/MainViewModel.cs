@@ -22,11 +22,19 @@ namespace Kr4.ViewModel
         private const int StarsTab = 1;
         private const int GalaxiesTab = 2;
 
+        private IEventAgregator _eventAgregator;
 
         
         public ObservableCollection<Planet> Planets { get; set; }
         public ObservableCollection<Star> Stars { get; set; }
         public ObservableCollection<Galaxy> Galaxies { get; set; }
+
+        private void UpdateTabs(object sender, EventArgs e)
+        {
+            Planets = new ObservableCollection<Planet>(DatabaseLocator.Context.Planets.ToList());
+            Stars = new ObservableCollection<Star>(DatabaseLocator.Context.Stars.ToList());
+            Galaxies = new ObservableCollection<Galaxy>(DatabaseLocator.Context.Galaxy.ToList());
+        }
 
         public MainViewModel()
         {
@@ -54,6 +62,8 @@ namespace Kr4.ViewModel
                 Luminosity = 90
             });
             DatabaseLocator.Context.SaveChanges();
+            _eventAgregator = new EventAgregator();
+            _eventAgregator.AddSubscriber(UpdateTabs);
             Planets = new ObservableCollection<Planet>(DatabaseLocator.Context.Planets.ToList());
             Stars = new ObservableCollection<Star>(DatabaseLocator.Context.Stars.ToList());
             Galaxies = new ObservableCollection<Galaxy>(DatabaseLocator.Context.Galaxy.ToList());
@@ -134,7 +144,7 @@ namespace Kr4.ViewModel
                         case GalaxiesTab:
                             var galaxies = DatabaseLocator.Context.Galaxy.AsQueryable();
                             List<Expression<Func<Galaxy, bool>>> conditionsGalaxies = new List<Expression<Func<Galaxy, bool>>>();
-                            if(GalaxyTypeEnter.Name != "none" && GalaxyTypeEnter != null)
+                            if (GalaxyTypeEnter != null && GalaxyTypeEnter.Name != "none" )
                                 conditionsGalaxies.Add(g => g.Type.Name == GalaxyTypeEnter.Name);
                             if (SearchBar != "" && SearchBar != null)
                                 conditionsGalaxies.Add(p => p.Name.Contains(SearchBar));
@@ -172,6 +182,7 @@ namespace Kr4.ViewModel
                 return new DelegateCommand(() =>
                 {
                     var form = new AddWindow();
+                    form.DataContext = new AddViewModel(_eventAgregator);
                     form.ShowDialog();
                 });
             }

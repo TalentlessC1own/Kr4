@@ -6,12 +6,11 @@
         xmlns:local="clr-namespace:Kr4.View"
         xmlns:viewModel="clr-namespace:Kr4.ViewModel"
         mc:Ignorable="d"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         Title="AddVindow" Height="450" Width="800">
 
-    <Window.DataContext>
-        <viewModel:AddViewModel/>
-    </Window.DataContext>
+   
 
 
     <Window.Resources>
@@ -26,7 +25,7 @@
             </Style.Setters>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="FontSize" Value="14" />
+                    <Setter Property="FontSize" Value="27" />
                     <Setter Property="Foreground" Value="Red" />
                 </Trigger>
             </Style.Triggers>
@@ -57,7 +56,9 @@
         <Grid Grid.Row="1" Background="Bisque">
             <StackPanel Background="Bisque" Orientation="Horizontal" HorizontalAlignment="Center" >
                 <Button Content="Add" Command="{Binding Add}" />
-                <Button Content="Cancel" Command="ApplicationCommands.Close"/>
+                <Button Content="Cancel" IsEnabled="True" IsCancel="True"/>
+                  
+               
             </StackPanel>
         </Grid>
         <Grid Grid.Row="0" Background="Bisque">
@@ -82,11 +83,11 @@
                         </Grid>
                         <Grid Grid.Column="1">
                             <StackPanel Background="Bisque">
-                                <TextBox FontSize="31" Margin = "5" Text="{Binding Name}"/>
-                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding Size}"/>
-                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding OrbitalPeriod}"/>
-                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding DistanceFromEarth}"/>
-                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding Age}"/>
+                                <TextBox FontSize="31" Margin = "5" Text="{Binding Name, Mode=OneWayToSource}"/>
+                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding Size,Mode=OneWayToSource}"/>
+                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding OrbitalPeriod,Mode=OneWayToSource}"/>
+                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding DistanceFromEarth,Mode=OneWayToSource}"/>
+                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding Age,Mode=OneWayToSource}"/>
 
                             </StackPanel>
                         </Grid>
@@ -113,12 +114,12 @@
                         </Grid>
                         <Grid Grid.Column="1">
                             <StackPanel Background="Bisque">
-                                <TextBox FontSize="31" Margin = "5" Text="{Binding Name}"/>
-                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding Luminosity}"/>
-                                <ComboBox FontSize="31" Margin = "5" SelectedItem="{Binding SpectralClass}" SelectedIndex="0" ItemsSource="{Binding SpectralClasses}"
+                                <TextBox FontSize="31" Margin = "5" Text="{Binding Name, Mode=OneWayToSource}"/>
+                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding Luminosity, Mode=OneWayToSource}"/>
+                                <ComboBox FontSize="31" Margin = "5" SelectedItem="{Binding SpectralClass, Mode=OneWayToSource}" SelectedIndex="0" ItemsSource="{Binding SpectralClasses}"
                                           DisplayMemberPath="Name" SelectedValuePath="Name" />
-                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding DistanceFromEarth}"/>
-                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding Age}"/>
+                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding DistanceFromEarth,Mode=OneWayToSource}"/>
+                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding Age,Mode=OneWayToSource}"/>
 
 
                             </StackPanel>
@@ -143,7 +144,7 @@
                         </Grid>
                         <Grid Grid.Column="1">
                             <StackPanel Background="Bisque">
-                                <TextBox FontSize="31" Margin = "5" Text ="{Binding Name}"/>
+                                <TextBox FontSize="31" Margin = "5" Text ="{Binding Name,Mode=OneWayToSource}"/>
 
 
                             </StackPanel>
@@ -170,11 +171,11 @@
                         </Grid>
                         <Grid Grid.Column="1">
                             <StackPanel Background="Bisque">
-                                <TextBox FontSize="31" Margin = "5" Text="{Binding Name}"/>
-                                <ComboBox FontSize="31" Margin = "5" SelectedItem="{Binding GalaxyType}" SelectedIndex="0" ItemsSource="{Binding GalaxyTypes}"
+                                <TextBox FontSize="31" Margin = "5" Text="{Binding Name,Mode=OneWayToSource}"/>
+                                <ComboBox FontSize="31" Margin = "5" SelectedItem="{Binding GalaxyType,Mode=OneWayToSource}" SelectedIndex="0" ItemsSource="{Binding GalaxyTypes}"
                                           DisplayMemberPath="Name" SelectedValuePath="Name" />
-                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding DistanceFromEarth}"/>
-                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding Age}"/>
+                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding DistanceFromEarth,Mode=OneWayToSource}"/>
+                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding Age,Mode=OneWayToSource}"/>
 
 
                             </StackPanel>
@@ -198,7 +199,7 @@
                         </Grid>
                         <Grid Grid.Column="1">
                             <StackPanel Background="Bisque">
-                                <TextBox FontSize="31" Margin = "5" Text="{Binding Name}"/>
+                                <TextBox FontSize="31" Margin = "5" Text="{Binding Name,Mode=OneWayToSource}"/>
 
 
                             </StackPanel>
