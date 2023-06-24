@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Kr4.Model.Entities
 {
-    public class Planet : ViewModelBase, IAstronomicalObject
+    public class Planet : ViewModelBase, IAstronomicalObject, ICloneable
     {
         public int Id { get; set; }
         public double Size { get; set; }
@@ -15,5 +15,10 @@ namespace Kr4.Model.Entities
         public string Name { get; set; }
         public double DistanceFromEarth { get; set; }
         public double Age { get; set; }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
     }
 }

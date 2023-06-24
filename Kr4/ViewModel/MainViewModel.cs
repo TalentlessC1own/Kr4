@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics.Eventing.Reader;
+using System.Drawing;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using DevExpress.Mvvm;
 using Kr4.Model;
 using Kr4.Model.Entities;
 using Kr4.Services;
+using Kr4.Services.Interface;
 using Kr4.View;
+using Kr4.ViewModel.EditViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace Kr4.ViewModel
 {
@@ -22,9 +28,10 @@ namespace Kr4.ViewModel
         private const int StarsTab = 1;
         private const int GalaxiesTab = 2;
 
-        private IEventAgregator _eventAgregator;
+       
 
-        
+        private IEditWindowsFactory _editWindowsFactory;
+
         public ObservableCollection<Planet> Planets { get; set; }
         public ObservableCollection<Star> Stars { get; set; }
         public ObservableCollection<Galaxy> Galaxies { get; set; }
@@ -36,7 +43,7 @@ namespace Kr4.ViewModel
             Galaxies = new ObservableCollection<Galaxy>(DatabaseLocator.Context.Galaxy.ToList());
         }
 
-        public MainViewModel()
+        public MainViewModel(IEditWindowsFactory editWindowsFactory)
         {
 
 
@@ -46,7 +53,7 @@ namespace Kr4.ViewModel
                 { Age = 99, DistanceFromEarth = 34, Name = "eee", OrbitalPeriod = 33, Size = 77 });
             DatabaseLocator.Context.Planets.Add(new Planet()
                 { Age = 23, DistanceFromEarth = 34, Name = "rttt", OrbitalPeriod = 33, Size = 77 });
-            DatabaseLocator.Context.GalaxysTypes.Add(new GalaxyType(){ Name = "iiii"});
+            DatabaseLocator.Context.GalaxysTypes.Add(new GalaxyType() { Name = "iiii" });
             DatabaseLocator.Context.GalaxysTypes.Add(new GalaxyType() { Name = "mmmm" });
             DatabaseLocator.Context.Stars.Add(new Star()
             {
@@ -62,11 +69,61 @@ namespace Kr4.ViewModel
                 Luminosity = 90
             });
             DatabaseLocator.Context.SaveChanges();
-            _eventAgregator = new EventAgregator();
-            _eventAgregator.AddSubscriber(UpdateTabs);
+            
             Planets = new ObservableCollection<Planet>(DatabaseLocator.Context.Planets.ToList());
             Stars = new ObservableCollection<Star>(DatabaseLocator.Context.Stars.ToList());
             Galaxies = new ObservableCollection<Galaxy>(DatabaseLocator.Context.Galaxy.ToList());
+
+            _editWindowsFactory = editWindowsFactory;
+            Planets.CollectionChanged += (s, e) =>
+            {
+                if (e.NewItems != null)
+                    DatabaseLocator.Context.Planets.AddRange(e.NewItems.Cast<Planet>());
+                else if  (e.OldItems != null)
+                    DatabaseLocator.Context.Planets.RemoveRange(e.OldItems.Cast<Planet>());
+                else if (e.Action == NotifyCollectionChangedAction.Replace)
+                {
+                    foreach (Galaxy item in e.NewItems)
+                    {
+                        DatabaseLocator.Context.Galaxy.Entry(item).State = EntityState.Modified;
+                    }
+                }
+                DatabaseLocator.Context.SaveChanges();
+
+            };
+            Stars.CollectionChanged += (s, e) =>
+            {
+                if (e.NewItems != null)
+                    DatabaseLocator.Context.Stars.AddRange(e.NewItems.Cast<Star>());
+                else if (e.OldItems != null)
+                    DatabaseLocator.Context.Stars.RemoveRange(e.OldItems.Cast<Star>());
+                else if (e.Action == NotifyCollectionChangedAction.Replace)
+                {
+                    foreach (Star item in e.NewItems)
+                    {
+                        DatabaseLocator.Context.Stars.Entry(item).State = EntityState.Modified;
+                    }
+                }
+                DatabaseLocator.Context.SaveChanges();
+
+            };
+            Galaxies.CollectionChanged += (s, e) =>
+            {
+                if (e.NewItems != null)
+                    DatabaseLocator.Context.Galaxy.AddRange(e.NewItems.Cast<Galaxy>());
+                else if (e.OldItems != null)
+                    DatabaseLocator.Context.Galaxy.RemoveRange(e.OldItems.Cast<Galaxy>());
+                else if (e.Action == NotifyCollectionChangedAction.Replace)
+                {
+                    foreach (Galaxy item in e.NewItems)
+                    {
+                        DatabaseLocator.Context.Galaxy.Entry(item).State = EntityState.Modified;
+                    }
+                }
+               
+                DatabaseLocator.Context.SaveChanges();
+
+            };
 
         }
 
@@ -95,18 +152,80 @@ namespace Kr4.ViewModel
                 var spectralClasses = DatabaseLocator.Context.SpectralClasses.ToList();
                 spectralClasses.Insert(0, new SpectralClass() { Name = "none" });
                 return spectralClasses;
+               
             }
         }
 
-        public GalaxyType GalaxyTypeEnter { get; set; } 
-        public SpectralClass SpectralClassEntered { get; set; } 
+        public GalaxyType GalaxyTypeEnter { get; set; }
+        public SpectralClass SpectralClassEntered { get; set; }
+
+        public ICommand LoadSpectralClasses
+        {
+            get { return new DelegateCommand(() =>
+            {
+                RaisePropertiesChanged(nameof(SpectralClasses));
+            }); }
+        }
+
+        public ICommand LoadGalaxyTypes
+        {
+            get
+            {
+
+                return new DelegateCommand(() =>
+                {
+                    RaisePropertiesChanged(nameof(GalaxyTypes));
+                });
+                
+            }
+        }
+
+        public ICommand Change
+        {
+            get
+            {
+
+                return new DelegateCommand(() =>
+                {
+                    _editWindowsFactory.CreateEditWindow(SelectedObject).Show();
+
+                });
+
+            }
+        }
+
+        public ICommand Delete
+        {
+            get
+            {
+
+                return new DelegateCommand(() =>
+                {
+                    if (SelectedObject is Planet)
+                        Planets.Remove(SelectedObject as Planet);
+                    else if (SelectedObject is Galaxy)
+                       Galaxies.Remove(SelectedObject as Galaxy);
+                    else if (SelectedObject is Star)
+                        Stars.Remove(SelectedObject as Star);
+                    else
+                        Xceed.Wpf.Toolkit.MessageBox.Show("Select an object to delete ", "",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                   
+                   
+
+
+                });
+
+            }
+        }
+
+
         public ICommand Search
         {
             get
             {
                 return new DelegateCommand(() =>
                 {
-
                     switch (SelectedTab)
                     {
                         case PlanetsTab:
@@ -127,7 +246,7 @@ namespace Kr4.ViewModel
                         case StarsTab:
                             var stars = DatabaseLocator.Context.Stars.AsQueryable();
                             List<Expression<Func<Star, bool>>> conditionsStars = new List<Expression<Func<Star, bool>>>();
-                            if(SpectralClassEntered.Name != "none" && SpectralClassEntered != null)
+                            if(SpectralClassEntered != null && SpectralClassEntered.Name != "none"  )
                                 conditionsStars.Add(s => s.Class.Name == SpectralClassEntered.Name);
                             if (SearchBar != "" && SearchBar != null)
                                 conditionsStars.Add(p => p.Name.Contains(SearchBar));
@@ -166,15 +285,6 @@ namespace Kr4.ViewModel
             }
         }
 
-        public ICommand Clear
-        {
-            get { return new DelegateCommand(() => { SearchBar = "";
-                MaxAge = 99999;
-                MinAge = 0;
-                GalaxyTypeEnter = null;
-                SpectralClassEntered = null;
-            }); }
-        }
         public ICommand OpenAdd
         {
             get
@@ -182,7 +292,6 @@ namespace Kr4.ViewModel
                 return new DelegateCommand(() =>
                 {
                     var form = new AddWindow();
-                    form.DataContext = new AddViewModel(_eventAgregator);
                     form.ShowDialog();
                 });
             }

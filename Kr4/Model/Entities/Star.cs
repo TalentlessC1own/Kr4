@@ -15,5 +15,7 @@ namespace Kr4.Model.Entities
         public string? Name { get; set; }
         public double DistanceFromEarth { get; set; }
         public double Age { get; set; }
+
+      
     }
 }

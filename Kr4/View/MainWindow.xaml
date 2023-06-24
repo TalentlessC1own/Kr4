@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModel="clr-namespace:Kr4.ViewModel"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+        xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
 
 
+   
 
-    <Window.DataContext>
-        <viewModel:MainViewModel/>
-    </Window.DataContext>
 
     <Window.Resources>
         <Style TargetType="Button">
@@ -57,7 +57,9 @@
             <Grid Grid.Row="0" Background="Aquamarine">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="45*"/>
-                    <RowDefinition Height="100*"/>
+                    <RowDefinition Height="50*"/>
+                    <RowDefinition Height="50*"/>
+
 
                 </Grid.RowDefinitions>
 
@@ -68,7 +70,13 @@
                 </TextBox>
                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Grid.Row="1" Command="{Binding Search}" FontSize="25" Content="Search" VerticalAlignment="Top" HorizontalAlignment="Center" />
-                    <Button Content="Clear" Command="{Binding Clear}" FontSize="25" VerticalAlignment="Top" />
+                  
+
+
+                </StackPanel>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Grid.Row="1" Command="{Binding Change}" FontSize="25" Content="Change" VerticalAlignment="Top" HorizontalAlignment="Center" />
+                    <Button Content="Delete" Command="{Binding Delete}" FontSize="25" VerticalAlignment="Top" />
 
 
                 </StackPanel>
@@ -108,13 +116,13 @@
                                 <Label Content="Min Age:" FontSize="20"/>
                             </Grid>
                             <Grid Grid.Column="2" Grid.ColumnSpan="2" Margin="0,0,144,0">
-                                <xctk:DoubleUpDown  Margin="2 " DefaultValue="0" AllowSpin="True" Value="{Binding MinAge}"/>
+                                <xctk:DoubleUpDown Minimum="0.0" Margin="2 " DefaultValue="0.0" AllowSpin="True" Value="{Binding MinAge}"/>
                             </Grid>
                             <Grid Grid.Column="3" Grid.ColumnSpan="2" Margin="0,0,144,0">
                                 <Label Content="Max Age:" FontSize="20"/>
                             </Grid>
                             <Grid Grid.Column="4">
-                                <xctk:DoubleUpDown Margin="2 " DefaultValue="99999" AllowSpin="True" Value="{Binding MaxAge}"/>
+                                <xctk:DoubleUpDown Minimum="0" Margin="2 " DefaultValue="99999" AllowSpin="True" Value="{Binding MaxAge}"/>
                             </Grid>
 
 
@@ -133,11 +141,11 @@
                                                 </Style>
                                             </UniformGrid.Resources>
 
-                                            <TextBox Text ="{Binding Name}"/>
-                                            <TextBox Text ="{Binding Size}"/>
-                                            <TextBox Text ="{Binding OrbitalPeriod}"/>
-                                            <TextBox Text ="{Binding DistanceFromEarth}"/>
-                                            <TextBox Text ="{Binding Age}"/>
+                                            <TextBlock HorizontalAlignment ="Center" Text ="{Binding Name}"/>
+                                            <TextBlock HorizontalAlignment ="Center" Text  ="{Binding Size}"/>
+                                            <TextBlock HorizontalAlignment ="Center" Text ="{Binding OrbitalPeriod}"/>
+                                            <TextBlock HorizontalAlignment ="Center" Text ="{Binding DistanceFromEarth}"/>
+                                            <TextBlock HorizontalAlignment ="Center" Text ="{Binding Age}"/>
 
 
 
@@ -190,21 +198,27 @@
                                 <Label Content="Spectral class:" FontSize="13"/>
                             </Grid>
                             <Grid Grid.Column="1">
-                                
-                                <ComboBox  SelectedIndex="0" SelectedItem="{Binding SpectralClassEntered}" ItemsSource="{Binding SpectralClasses}"
-                                           DisplayMemberPath="Name" SelectedValuePath="Name"   />
+
+                                <ComboBox    SelectedIndex="0" SelectedItem="{Binding SpectralClassEntered}" ItemsSource="{Binding SpectralClasses}"
+                                            DisplayMemberPath="Name" SelectedValuePath="Name" >
+                                    <b:Interaction.Triggers>
+                                        <b:EventTrigger EventName ="DropDownOpened" >
+                                            <b:InvokeCommandAction Command="{Binding LoadSpectralClasses }"/>
+                                        </b:EventTrigger>
+                                    </b:Interaction.Triggers>
+                                </ComboBox>
                             </Grid>
                             <Grid Grid.Column="2" Margin="2">
                                 <Label Content="Min Age:" FontSize="20"/>
                             </Grid>
                             <Grid Grid.Column="3" Margin="2">
-                                <xctk:DoubleUpDown  Margin="2 " DefaultValue="0" AllowSpin="True" Value="{Binding MinAge}"/>
+                                <xctk:DoubleUpDown Minimum="0" Margin="2 " DefaultValue="0" AllowSpin="True" Value="{Binding MinAge}"/>
                             </Grid>
                             <Grid Grid.Column="4"  Margin="2">
                                 <Label Content="Max Age:" FontSize="20"/>
                             </Grid>
                             <Grid Grid.Column="5">
-                                <xctk:DoubleUpDown Margin="2 " DefaultValue="99999" AllowSpin="True" Value="{Binding MaxAge}"/>
+                                <xctk:DoubleUpDown Minimum="0" Margin="2 " DefaultValue="99999" AllowSpin="True" Value="{Binding MaxAge}"/>
                             </Grid>
                         </Grid>
                         <Grid Grid.Row="1">
@@ -221,11 +235,11 @@
                                                 </Style>
                                             </UniformGrid.Resources>
 
-                                            <TextBox Text ="{Binding Name}"/>
-                                            <TextBox Text ="{Binding Luminosity}"/>
-                                            <TextBox Text ="{Binding Class.Name}"/>
-                                            <TextBox Text ="{Binding DistanceFromEarth}"/>
-                                            <TextBox Text ="{Binding Age}"/>
+                                            <TextBlock HorizontalAlignment ="Center" Text ="{Binding Name}"/>
+                                            <TextBlock HorizontalAlignment ="Center" Text ="{Binding Luminosity}"/>
+                                            <TextBlock HorizontalAlignment ="Center" Text ="{Binding Class.Name}"/>
+                                            <TextBlock HorizontalAlignment ="Center" Text ="{Binding DistanceFromEarth}"/>
+                                            <TextBlock HorizontalAlignment ="Center" Text ="{Binding Age}"/>
 
 
 
@@ -237,8 +251,8 @@
                                         <StackPanel>
                                             <UniformGrid Columns="5" >
                                                 <TextBlock Text="Name" HorizontalAlignment ="Center"  FontWeight="Bold" />
+                                                <TextBlock Text="Luminosity" HorizontalAlignment ="Center" FontWeight="Bold" />
                                                 <TextBlock Text="Spectral class" HorizontalAlignment ="Center" FontWeight="Bold" />
-                                                <TextBlock Text="OrbitalPeriod" HorizontalAlignment ="Center" FontWeight="Bold" />
                                                 <TextBlock Text="DistanceFromEarth" HorizontalAlignment ="Center" FontWeight="Bold" />
                                                 <TextBlock Text="Age" HorizontalAlignment ="Center" FontWeight="Bold" />
 
@@ -276,6 +290,11 @@
                             <Grid Grid.Column="1">
                                 <ComboBox SelectedIndex="0" SelectedItem="{Binding GalaxyTypeEnter}" ItemsSource="{Binding GalaxyTypes}"
                                           DisplayMemberPath="Name" SelectedValuePath="Name">
+                                    <b:Interaction.Triggers>
+                                        <b:EventTrigger EventName ="DropDownOpened" >
+                                            <b:InvokeCommandAction Command="{Binding LoadGalaxyTypes }"/>
+                                        </b:EventTrigger>
+                                    </b:Interaction.Triggers>
                                 </ComboBox>
 
                             </Grid>
@@ -283,13 +302,13 @@
                                 <Label Content="Min Age:" FontSize="20"/>
                             </Grid>
                             <Grid Grid.Column="3" Margin="2">
-                                <xctk:DoubleUpDown  Margin="2 " DefaultValue="0" AllowSpin="True" Value="{Binding MinAge}"/>
+                                <xctk:DoubleUpDown Minimum="0" Margin="2 " DefaultValue="0" AllowSpin="True" Value="{Binding MinAge}"/>
                             </Grid>
                             <Grid Grid.Column="4"  Margin="2">
                                 <Label Content="Max Age:" FontSize="20"/>
                             </Grid>
                             <Grid Grid.Column="5">
-                                <xctk:DoubleUpDown Margin="2 " DefaultValue="99999" AllowSpin="True" Value="{Binding MaxAge}"/>
+                                <xctk:DoubleUpDown  Minimum="0" Margin="2 " DefaultValue="99999" AllowSpin="True" Value="{Binding MaxAge}"/>
                             </Grid>
                         </Grid>
                         <Grid Grid.Row="1">
@@ -306,10 +325,10 @@
                                                 </Style>
                                             </UniformGrid.Resources>
 
-                                            <TextBox Text ="{Binding Name}"/>
-                                            <TextBox Text ="{Binding Type.Name}"/>
-                                            <TextBox Text ="{Binding DistanceFromEarth}"/>
-                                            <TextBox Text ="{Binding Age}"/>
+                                            <TextBlock HorizontalAlignment ="Center" Text ="{Binding Name}"/>
+                                            <TextBlock HorizontalAlignment ="Center" Text ="{Binding Type.Name}"/>
+                                            <TextBlock HorizontalAlignment ="Center" Text ="{Binding DistanceFromEarth}"/>
+                                            <TextBlock HorizontalAlignment ="Center" Text ="{Binding Age}"/>
 
 
 

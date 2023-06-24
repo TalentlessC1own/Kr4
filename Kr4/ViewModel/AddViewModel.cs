@@ -21,7 +21,6 @@ namespace Kr4.ViewModel
         private const int AddGalaxy = 3;
         private const int AddGalaxyType = 4;
 
-        private IEventAgregator eventAgregator;
 
         private string ChangedList = "";
 
@@ -41,10 +40,7 @@ namespace Kr4.ViewModel
 
         public GalaxyType GalaxyType { get; set; }
 
-        public AddViewModel(IEventAgregator eventAgregator)
-        {
-            this.eventAgregator = eventAgregator;
-        }
+      
 
         private void clearFields()
         {
@@ -54,15 +50,13 @@ namespace Kr4.ViewModel
             DistanceFromEarth = 0;
             Age = 0;
             Luminosity = 0;
-            SpectralClass = new SpectralClass() { Name = "none" };
-            GalaxyType = new GalaxyType() { Name = "none" };
+            
         }
         public List<GalaxyType> GalaxyTypes
         {
             get
             {
                 var galaxyType = DatabaseLocator.Context.GalaxysTypes.ToList();
-                galaxyType.Insert(0, new GalaxyType() { Name = "none" });
                 return galaxyType;
             }
             
@@ -73,7 +67,6 @@ namespace Kr4.ViewModel
             get
             {
                 var spectralClasses = DatabaseLocator.Context.SpectralClasses.ToList();
-                spectralClasses.Insert(0, new SpectralClass() { Name = "none" });
                 return spectralClasses;
             }
         }
@@ -95,6 +88,8 @@ namespace Kr4.ViewModel
                                     Name = this.Name, DistanceFromEarth = this.DistanceFromEarth, Age = this.Age,
                                     OrbitalPeriod = this.OrbitalPeriod, Size = this.Size
                                 });
+                                 Xceed.Wpf.Toolkit.MessageBox.Show("Object created successfully", "",
+                                    MessageBoxButton.OK, MessageBoxImage.Asterisk);
                             }
                             else
                             {
@@ -112,6 +107,8 @@ namespace Kr4.ViewModel
                                     Name = this.Name, Age = this.Age, DistanceFromEarth = this.DistanceFromEarth,
                                     Class = this.SpectralClass, Luminosity = this.Luminosity
                                 });
+                                Xceed.Wpf.Toolkit.MessageBox.Show("Object created successfully", "",
+                                    MessageBoxButton.OK, MessageBoxImage.Asterisk);
                             }
                             else
                             {
@@ -126,6 +123,8 @@ namespace Kr4.ViewModel
                             {
                                 DatabaseLocator.Context.SpectralClasses.Add(new SpectralClass() { Name = this.Name });
                                 ChangedList = nameof(SpectralClasses);
+                                Xceed.Wpf.Toolkit.MessageBox.Show("Object created successfully", "",
+                                    MessageBoxButton.OK, MessageBoxImage.Asterisk);
                             }
                             else
                             {
@@ -137,13 +136,15 @@ namespace Kr4.ViewModel
 
                             break;
                         case AddGalaxy:
-                            if (Name != "" && GalaxyType != null)
+                            if (Name != "" && GalaxyType != null )
                             {
                                 DatabaseLocator.Context.Galaxy.Add(new Galaxy()
                                 {
                                     Name = this.Name, Type = GalaxyType, DistanceFromEarth = this.DistanceFromEarth,
                                     Age = this.Age
                                 });
+                                Xceed.Wpf.Toolkit.MessageBox.Show("Object created successfully", "",
+                                    MessageBoxButton.OK, MessageBoxImage.Asterisk);
                             }
                             else
                             {
@@ -158,6 +159,8 @@ namespace Kr4.ViewModel
                             {
                                 ChangedList = nameof(GalaxyTypes);
                                 DatabaseLocator.Context.GalaxysTypes.Add(new GalaxyType() { Name = this.Name });
+                                Xceed.Wpf.Toolkit.MessageBox.Show("Object created successfully", "",
+                                    MessageBoxButton.OK, MessageBoxImage.Asterisk);
                             }
                             else
                             {

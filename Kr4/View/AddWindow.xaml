@@ -11,7 +11,9 @@
         Title="AddVindow" Height="450" Width="800">
 
    
-
+<Window.DataContext>
+    <viewModel:AddViewModel/>
+</Window.DataContext>
 
     <Window.Resources>
         <Style TargetType="Button" >
@@ -38,12 +40,14 @@
                     <Setter Property="Foreground" Value="Black"/>
                     <Setter Property="Text" Value=""/>
                     <Setter Property="FontSize" Value="25"/>
+                    <Setter Property="Margin" Value="5"></Setter>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
         <Style TargetType="Label">
-            <Setter Property="FontSize" Value="25"/>
+            <Setter Property="FontSize" Value="26"/>
+            <Setter Property="Margin" Value="5"></Setter>
         </Style>
 
     </Window.Resources>
@@ -73,21 +77,21 @@
 
                         <Grid Grid.Column="0">
                             <StackPanel Background="BlanchedAlmond">
-                                <Label Content="Name" Margin="5" Background="Azure"/>
-                                <Label Content="Size" Margin="5" Background="Azure"/>
-                                <Label Content="Orbital Period" Margin="5" Background="Azure"/>
-                                <Label Content="Distance from Earth" Margin="5" Background="Azure"/>
-                                <Label Content="Age" Margin="5" Background="Azure"/>
+                                <Label Content="Name" Background="Azure"/>
+                                <Label Content="Size(km)"  Background="Azure"/>
+                                <Label Content="Orbital Period(years)"  Background="Azure"/>
+                                <Label Content="Distance from Earth(km)"  Background="Azure"/>
+                                <Label Content="Age"  Background="Azure"/>
 
                             </StackPanel>
                         </Grid>
                         <Grid Grid.Column="1">
                             <StackPanel Background="Bisque">
                                 <TextBox FontSize="31" Margin = "5" Text="{Binding Name, Mode=OneWayToSource}"/>
-                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding Size,Mode=OneWayToSource}"/>
-                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding OrbitalPeriod,Mode=OneWayToSource}"/>
-                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding DistanceFromEarth,Mode=OneWayToSource}"/>
-                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding Age,Mode=OneWayToSource}"/>
+                                <xctk:DoubleUpDown DefaultValue="0" Minimum="0" Margin="5" FontSize="31" Value="{Binding Size,Mode=OneWayToSource}"/>
+                                <xctk:DoubleUpDown DefaultValue="0" Minimum="0" Margin="5" FontSize="31" Value="{Binding OrbitalPeriod,Mode=OneWayToSource}"/>
+                                <xctk:DoubleUpDown DefaultValue="0" Minimum="0" Margin="5" FontSize="31" Value="{Binding DistanceFromEarth,Mode=OneWayToSource}"/>
+                                <xctk:DoubleUpDown DefaultValue="0" Minimum="0" Margin="5" FontSize="31" Value="{Binding Age,Mode=OneWayToSource}"/>
 
                             </StackPanel>
                         </Grid>
@@ -107,7 +111,7 @@
                                 <Label Content="Name" Margin="5" Background="Azure"/>
                                 <Label Content="Luminosity" Margin="5" Background="Azure"/>
                                 <Label Content="Spectral class" Margin="5" Background="Azure"/>
-                                <Label Content="Distance from Earth" Margin="5" Background="Azure"/>
+                                <Label Content="Distance from Earth(km)" Margin="5" Background="Azure"/>
                                 <Label Content="Age" Margin="5" Background="Azure"/>
 
                             </StackPanel>
@@ -115,11 +119,11 @@
                         <Grid Grid.Column="1">
                             <StackPanel Background="Bisque">
                                 <TextBox FontSize="31" Margin = "5" Text="{Binding Name, Mode=OneWayToSource}"/>
-                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding Luminosity, Mode=OneWayToSource}"/>
+                                <xctk:DoubleUpDown DefaultValue="0"  Minimum="0" Margin="5" FontSize="31" Value="{Binding Luminosity, Mode=OneWayToSource}"/>
                                 <ComboBox FontSize="31" Margin = "5" SelectedItem="{Binding SpectralClass, Mode=OneWayToSource}" SelectedIndex="0" ItemsSource="{Binding SpectralClasses}"
                                           DisplayMemberPath="Name" SelectedValuePath="Name" />
-                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding DistanceFromEarth,Mode=OneWayToSource}"/>
-                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding Age,Mode=OneWayToSource}"/>
+                                <xctk:DoubleUpDown DefaultValue="0" Minimum="0" Margin="5" FontSize="31" Value="{Binding DistanceFromEarth,Mode=OneWayToSource}"/>
+                                <xctk:DoubleUpDown DefaultValue="0" Minimum="0" Margin="5" FontSize="31" Value="{Binding Age,Mode=OneWayToSource}"/>
 
 
                             </StackPanel>
@@ -164,7 +168,7 @@
                             <StackPanel Background="BlanchedAlmond">
                                 <Label Content="Name" Margin="5" Background="Azure"/>
                                 <Label Content="Type" Margin="5" Background="Azure"/>
-                                <Label Content="Distance from Earth" Margin="5" Background="Azure"/>
+                                <Label Content="Distance from Earth(km)" Margin="5" Background="Azure"/>
                                 <Label Content="Age" Margin="5" Background="Azure"/>
 
                             </StackPanel>
@@ -174,8 +178,8 @@
                                 <TextBox FontSize="31" Margin = "5" Text="{Binding Name,Mode=OneWayToSource}"/>
                                 <ComboBox FontSize="31" Margin = "5" SelectedItem="{Binding GalaxyType,Mode=OneWayToSource}" SelectedIndex="0" ItemsSource="{Binding GalaxyTypes}"
                                           DisplayMemberPath="Name" SelectedValuePath="Name" />
-                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding DistanceFromEarth,Mode=OneWayToSource}"/>
-                                <xctk:DoubleUpDown Margin="5" FontSize="31" Value="{Binding Age,Mode=OneWayToSource}"/>
+                                <xctk:DoubleUpDown DefaultValue="0" Minimum="0" Margin="5" FontSize="31" Value="{Binding DistanceFromEarth,Mode=OneWayToSource}"/>
+                                <xctk:DoubleUpDown DefaultValue="0" Minimum="0" Margin="5" FontSize="31" Value="{Binding Age,Mode=OneWayToSource}"/>
 
 
                             </StackPanel>
