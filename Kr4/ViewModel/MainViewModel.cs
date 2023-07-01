@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Configuration;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Linq;
@@ -123,7 +124,13 @@ namespace Kr4.ViewModel
                
                 DatabaseLocator.Context.SaveChanges();
 
+              
+
+
             };
+            if (bool.Parse(ConfigurationManager.AppSettings["ShowFriendlyMessage"]))
+              Xceed.Wpf.Toolkit.MessageBox.Show("Hi good day ", "",
+               MessageBoxButton.OK, MessageBoxImage.Error);
 
         }
 
@@ -184,7 +191,7 @@ namespace Kr4.ViewModel
         {
             get
             {
-
+             
                 return new DelegateCommand(() =>
                 {
                     _editWindowsFactory.CreateEditWindow(SelectedObject).Show();

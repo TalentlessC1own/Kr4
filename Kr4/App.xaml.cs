@@ -18,6 +18,8 @@ namespace Kr4
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         protected override void OnStartup(StartupEventArgs e)
         {
+          
+
             LogManager.Configuration = new NLog.Config.XmlLoggingConfiguration("NLog.config");
 
 
@@ -34,6 +36,7 @@ namespace Kr4
             logger.Error("234");
 
             MainWindow = _bootstrapper.Run();
+          
         }
         private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
