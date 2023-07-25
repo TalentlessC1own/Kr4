@@ -9,14 +9,17 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Kr4.Services;
 using Kr4.ViewModel.EditViewModels.Interface;
+using Kr4.Services.Interface;
 
 namespace Kr4.ViewModel.EditViewModels
 {
-    public class EditStarViewModel : ViewModelBase, ICloseWindows
+    public class EditStarViewModel : ViewModelBase, IEditStarViewModel
     {
         private Star star;
         private Star defaultStar;
         private Action close;
+
+        private IMessageService messageService;
 
         public List<SpectralClass> SpectralClasses
         {
@@ -54,7 +57,7 @@ namespace Kr4.ViewModel.EditViewModels
 
         public SpectralClass SpectralClass
         {
-            get { return star.Class; }
+            get { return star!.Class; }
             set
             {
                 if( star.Class!= value)
@@ -91,8 +94,9 @@ namespace Kr4.ViewModel.EditViewModels
             }
         }
 
-        public EditStarViewModel(Star star, Action close)
+        public EditStarViewModel(Star star, Action close, IMessageService messageService)
         {
+            this.messageService = messageService;
             TinyMapper.Bind<Star, Star>(config => config.Ignore(x => x.Class));
             TinyMapper.Bind<SpectralClass,SpectralClass>();
             this.star = star;
@@ -138,7 +142,13 @@ namespace Kr4.ViewModel.EditViewModels
 
         public bool CanClose()
         {
-            return Name != "" && SpectralClass != null;
+            if(Name != "" && SpectralClass != null)
+                return true;
+            else
+            {
+                messageService.SendMessageError("Fill in required fields");
+                return false;
+            }
         }
     }
 }

@@ -18,11 +18,12 @@ using Kr4.Services;
 using Kr4.Services.Interface;
 using Kr4.View;
 using Kr4.ViewModel.EditViewModels;
+using Kr4.ViewModel.EditViewModels.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kr4.ViewModel
 {
-    public class MainViewModel : ViewModelBase
+    public class MainViewModel : ViewModelBase , IMainViewModel
     {
 
         private const int PlanetsTab = 0;
@@ -31,26 +32,29 @@ namespace Kr4.ViewModel
 
        
 
-        private IEditWindowsFactory _editWindowsFactory;
+        private IEditWindowsFactory editWindowsFactory;
+        private IMessageService messageService;
+        private ISettingService settingService;
 
         public ObservableCollection<Planet> Planets { get; set; }
         public ObservableCollection<Star> Stars { get; set; }
         public ObservableCollection<Galaxy> Galaxies { get; set; }
 
-        private void UpdateTabs(object sender, EventArgs e)
+        //private ICommand openAddWindowCommand;
+        //public ICommand OpenAddWindowCommand
+        //{
+        //    get => openAddWindowCommand;
+        //    set => openAddWindowCommand = value;
+        //}
+
+
+        public MainViewModel(IEditWindowsFactory editWindowsFactory, IMessageService messageService, ISettingService settingService)
         {
-            Planets = new ObservableCollection<Planet>(DatabaseLocator.Context.Planets.ToList());
-            Stars = new ObservableCollection<Star>(DatabaseLocator.Context.Stars.ToList());
-            Galaxies = new ObservableCollection<Galaxy>(DatabaseLocator.Context.Galaxy.ToList());
-        }
-
-        public MainViewModel(IEditWindowsFactory editWindowsFactory)
-        {
 
 
-            DatabaseLocator.Context.Planets.Add(new Planet()
+            DatabaseLocator.Context!.Planets.Add(new Planet()
                 { Age = 12, DistanceFromEarth = 34, Name = "qweqwe", OrbitalPeriod = 33, Size = 77 });
-            DatabaseLocator.Context.Planets.Add(new Planet()
+            DatabaseLocator.Context!.Planets.Add(new Planet()
                 { Age = 99, DistanceFromEarth = 34, Name = "eee", OrbitalPeriod = 33, Size = 77 });
             DatabaseLocator.Context.Planets.Add(new Planet()
                 { Age = 23, DistanceFromEarth = 34, Name = "rttt", OrbitalPeriod = 33, Size = 77 });
@@ -73,9 +77,12 @@ namespace Kr4.ViewModel
             
             Planets = new ObservableCollection<Planet>(DatabaseLocator.Context.Planets.ToList());
             Stars = new ObservableCollection<Star>(DatabaseLocator.Context.Stars.ToList());
-            Galaxies = new ObservableCollection<Galaxy>(DatabaseLocator.Context.Galaxy.ToList());
+            Galaxies = new ObservableCollection<Galaxy>(DatabaseLocator.Context.Galaxys.ToList());
 
-            _editWindowsFactory = editWindowsFactory;
+            this.editWindowsFactory = editWindowsFactory;
+            this.messageService = messageService;
+            this.settingService = settingService;
+
             Planets.CollectionChanged += (s, e) =>
             {
                 if (e.NewItems != null)
@@ -84,9 +91,9 @@ namespace Kr4.ViewModel
                     DatabaseLocator.Context.Planets.RemoveRange(e.OldItems.Cast<Planet>());
                 else if (e.Action == NotifyCollectionChangedAction.Replace)
                 {
-                    foreach (Galaxy item in e.NewItems)
+                    foreach (Galaxy item in e!.NewItems)
                     {
-                        DatabaseLocator.Context.Galaxy.Entry(item).State = EntityState.Modified;
+                        DatabaseLocator.Context.Galaxys.Entry(item).State = EntityState.Modified;
                     }
                 }
                 DatabaseLocator.Context.SaveChanges();
@@ -111,14 +118,14 @@ namespace Kr4.ViewModel
             Galaxies.CollectionChanged += (s, e) =>
             {
                 if (e.NewItems != null)
-                    DatabaseLocator.Context.Galaxy.AddRange(e.NewItems.Cast<Galaxy>());
+                    DatabaseLocator.Context.Galaxys.AddRange(e.NewItems.Cast<Galaxy>());
                 else if (e.OldItems != null)
-                    DatabaseLocator.Context.Galaxy.RemoveRange(e.OldItems.Cast<Galaxy>());
+                    DatabaseLocator.Context.Galaxys.RemoveRange(e.OldItems.Cast<Galaxy>());
                 else if (e.Action == NotifyCollectionChangedAction.Replace)
                 {
-                    foreach (Galaxy item in e.NewItems)
+                    foreach (Galaxy item in e!.NewItems)
                     {
-                        DatabaseLocator.Context.Galaxy.Entry(item).State = EntityState.Modified;
+                        DatabaseLocator.Context.Galaxys.Entry(item).State = EntityState.Modified;
                     }
                 }
                
@@ -128,13 +135,31 @@ namespace Kr4.ViewModel
 
 
             };
-            if (bool.Parse(ConfigurationManager.AppSettings["ShowFriendlyMessage"]))
-              Xceed.Wpf.Toolkit.MessageBox.Show("Hi good day ", "",
-               MessageBoxButton.OK, MessageBoxImage.Error);
+            greetingsSwitch = settingService.Greetings;
+            if (greetingsSwitch)
+              messageService.SendMessage("Hey, have a good day");
 
         }
 
         public IAstronomicalObject SelectedObject { get; set; }
+
+        private bool greetingsSwitch;
+        public bool GreetingsSwitch
+        {
+            get
+            {
+                return settingService.Greetings;
+            }
+            set
+            {
+                if (value != greetingsSwitch)
+                {
+                    greetingsSwitch = value;
+                    settingService.Greetings = greetingsSwitch;
+                    RaisePropertiesChanged(nameof(GreetingsSwitch));
+                }
+            }
+        }
 
         public int MinAge { get; set; } = 0;
         public int MaxAge { get; set; } = 99999;
@@ -194,7 +219,7 @@ namespace Kr4.ViewModel
              
                 return new DelegateCommand(() =>
                 {
-                    _editWindowsFactory.CreateEditWindow(SelectedObject).Show();
+                    editWindowsFactory.CreateEditWindow(SelectedObject).Show();
 
                 });
 
@@ -215,8 +240,7 @@ namespace Kr4.ViewModel
                     else if (SelectedObject is Star)
                         Stars.Remove(SelectedObject as Star);
                     else
-                        Xceed.Wpf.Toolkit.MessageBox.Show("Select an object to delete ", "",
-                            MessageBoxButton.OK, MessageBoxImage.Error);
+                       messageService.SendMessage("Select an object to delete");
                    
                    
 
@@ -268,7 +292,7 @@ namespace Kr4.ViewModel
                             Stars = new ObservableCollection<Star>(stars.ToList());
                             break;
                         case GalaxiesTab:
-                            var galaxies = DatabaseLocator.Context.Galaxy.AsQueryable();
+                            var galaxies = DatabaseLocator.Context!.Galaxys.AsQueryable();
                             List<Expression<Func<Galaxy, bool>>> conditionsGalaxies = new List<Expression<Func<Galaxy, bool>>>();
                             if (GalaxyTypeEnter != null && GalaxyTypeEnter.Name != "none" )
                                 conditionsGalaxies.Add(g => g.Type.Name == GalaxyTypeEnter.Name);
@@ -298,8 +322,9 @@ namespace Kr4.ViewModel
             {
                 return new DelegateCommand(() =>
                 {
-                    var form = new AddWindow();
-                    form.ShowDialog();
+                    var window = new AddWindow();
+                    window.DataContext = Bootstrapper.Bootstrapper.Resolve<IAddViewModel>();
+                    window.ShowDialog();
                 });
             }
         }

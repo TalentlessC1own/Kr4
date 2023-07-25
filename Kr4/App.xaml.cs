@@ -5,6 +5,8 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
+using Kr4.Bootstrapper;
 using Kr4.Model;
 using Kr4.Services;
 using NLog;
@@ -14,7 +16,7 @@ namespace Kr4
    
     public partial class App 
     {
-        private Bootstrapper.Bootstrapper? _bootstrapper;
+        //private Bootstrapper.Bootstrapper? _bootstrapper;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -23,27 +25,52 @@ namespace Kr4
             LogManager.Configuration = new NLog.Config.XmlLoggingConfiguration("NLog.config");
 
 
-            this.DispatcherUnhandledException += App_DispatcherUnhandledException;
+           
+            AppDomain.CurrentDomain.UnhandledException += App_DispatcherUnhandledException;
+            Current.DispatcherUnhandledException += DispatcherOnUnhandledException;
 
             
-            LogManager.LoadConfiguration("NLog.config");
+            LogManager.Setup().LoadConfigurationFromFile("NLog.config");
             base.OnStartup(e);
             var context = new AstronomicalContext();
             context.Database.EnsureCreated();
-            _bootstrapper = new Bootstrapper.Bootstrapper();
-
             DatabaseLocator.Context = context;
-            logger.Error("234");
 
-            MainWindow = _bootstrapper.Run();
-          
+            var window = new MainWindow();
+            window.DataContext = Bootstrapper.Bootstrapper.RootVisual;
+
+            window.Closed += Window_Closed;
+            Current.Exit += Current_Exit;
+
+
+         
+            logger.Debug("Start\n");
+
+            window.Show();
+
+
         }
-        private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+
+        private void Current_Exit(object sender, ExitEventArgs e)
+        {
+            logger.Debug("Exit");
+        }
+
+        private void Window_Closed(object? sender, EventArgs e)
+        {
+            Bootstrapper.Bootstrapper.Stop();
+        }
+
+        private void DispatcherOnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            logger.Error(e.Exception as Exception, "Unhandled dispatcher thread exception");
+        }
+
+        private  void App_DispatcherUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
            
-            logger.Error(e.Exception, "Unhandled exception occurred");
+            logger.Error(e.ExceptionObject as Exception, "Unhandled app domain exception");
 
-            e.Handled = true;
         }
     }
 }

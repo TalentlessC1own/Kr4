@@ -7,16 +7,13 @@ using DevExpress.Mvvm;
 
 namespace Kr4.Model.Entities
 {
-    public class Galaxy : ViewModelBase,IAstronomicalObject, ICloneable
+    public class Galaxy : ViewModelBase,IAstronomicalObject
     {
-        public GalaxyType Type { get; set; }
+        public GalaxyType? Type { get; set; }
         public int Id { get; set; }
         public string Name { get; set; }
         public double DistanceFromEarth { get; set; }
         public double Age { get; set; }
-        public object Clone()
-        {
-            return this.MemberwiseClone();
-        }
+        
     }
 }

@@ -11,9 +11,7 @@
         Title="AddVindow" Height="450" Width="800">
 
    
-<Window.DataContext>
-    <viewModel:AddViewModel/>
-</Window.DataContext>
+
 
     <Window.Resources>
         <Style TargetType="Button" >
@@ -156,7 +154,7 @@
                     </Grid>
                 </TabItem>
 
-                <TabItem Header="Add Galaxy">
+                <TabItem Header="Add Galaxys">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -187,7 +185,7 @@
                     </Grid>
                 </TabItem>
 
-                <TabItem Header="Add Galaxy type">
+                <TabItem Header="Add Galaxys type">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>

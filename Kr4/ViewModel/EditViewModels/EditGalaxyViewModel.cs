@@ -9,20 +9,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Kr4.Services.Interface;
 
 namespace Kr4.ViewModel.EditViewModels
 {
-     public class EditGalaxyViewModel : ViewModelBase, ICloseWindows
+     public class EditGalaxyViewModel : ViewModelBase, IEditGalaxyViewModel
     {
         private Galaxy galaxy;
         private Galaxy defaultGalaxy;
         private Action close;
 
+        private IMessageService messageService;
+
+
         public List<GalaxyType> GalaxyTypes
         {
             get
             {
-                var galaxyType = DatabaseLocator.Context.GalaxysTypes.ToList();
+                var galaxyType = DatabaseLocator.Context!.GalaxysTypes.ToList();
                 return galaxyType;
             }
         }
@@ -81,8 +85,9 @@ namespace Kr4.ViewModel.EditViewModels
             }
         }
 
-        public EditGalaxyViewModel(Galaxy galaxy, Action close)
+        public EditGalaxyViewModel(Galaxy galaxy, Action close, IMessageService messageService)
         {
+            this.messageService = messageService;
             TinyMapper.Bind<Galaxy, Galaxy>(config => config.Ignore(x => x.Type));
             this.galaxy = galaxy;
             defaultGalaxy = TinyMapper.Map<Galaxy>(galaxy);
@@ -125,7 +130,13 @@ namespace Kr4.ViewModel.EditViewModels
 
         public bool CanClose()
         {
-            return Name != "" && GalaxyType != null;
+            if (Name != "" && GalaxyType != null)
+                return true;
+            else
+            {
+                messageService.SendMessageError("Fill in required fields");
+                return false;
+            }
         }
     }
 }

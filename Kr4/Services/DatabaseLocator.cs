@@ -7,8 +7,8 @@ using Kr4.Model;
 
 namespace Kr4.Services
 {
-   public  class DatabaseLocator
+   public  static class DatabaseLocator
     {
-        public static AstronomicalContext Context { get; set; }
+        public static AstronomicalContext? Context { get; set; }
     }
 }

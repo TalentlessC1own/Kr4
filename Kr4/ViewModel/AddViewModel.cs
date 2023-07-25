@@ -9,10 +9,12 @@ using System.Windows;
 using Kr4.Model.Entities;
 using Kr4.Services;
 using System.Windows.Input;
+using Kr4.Services.Interface;
+using Kr4.ViewModel.EditViewModels.Interface;
 
 namespace Kr4.ViewModel
 {
-    public class AddViewModel : ViewModelBase
+    public class AddViewModel : ViewModelBase , IAddViewModel
     {
         
         private const int AddPlanet = 0;
@@ -23,6 +25,13 @@ namespace Kr4.ViewModel
 
 
         private string ChangedList = "";
+
+        private IMessageService messageService;
+
+        public AddViewModel(IMessageService messageService)
+        {
+            this.messageService = messageService;
+        }
 
         public int SelectedTab { get; set; }
         public string Name { get; set; }
@@ -56,7 +65,7 @@ namespace Kr4.ViewModel
         {
             get
             {
-                var galaxyType = DatabaseLocator.Context.GalaxysTypes.ToList();
+                var galaxyType = DatabaseLocator.Context!.GalaxysTypes.ToList();
                 return galaxyType;
             }
             
@@ -66,7 +75,7 @@ namespace Kr4.ViewModel
         {
             get
             {
-                var spectralClasses = DatabaseLocator.Context.SpectralClasses.ToList();
+                var spectralClasses = DatabaseLocator.Context!.SpectralClasses.ToList();
                 return spectralClasses;
             }
         }
@@ -83,18 +92,16 @@ namespace Kr4.ViewModel
                         case AddPlanet:
                             if (Name != "")
                             {
-                                DatabaseLocator.Context.Planets.Add(new Planet()
+                                DatabaseLocator.Context!.Planets.Add(new Planet()
                                 {
                                     Name = this.Name, DistanceFromEarth = this.DistanceFromEarth, Age = this.Age,
                                     OrbitalPeriod = this.OrbitalPeriod, Size = this.Size
                                 });
-                                 Xceed.Wpf.Toolkit.MessageBox.Show("Object created successfully", "",
-                                    MessageBoxButton.OK, MessageBoxImage.Asterisk);
+                                messageService.SendMessage("Object created successfully");
                             }
                             else
                             {
-                                Xceed.Wpf.Toolkit.MessageBox.Show("Fill out the required field Name", "",
-                                    MessageBoxButton.OK, MessageBoxImage.Error);
+                               messageService.SendMessageError("Fill out the required field Name");
                                 return;
                             }
 
@@ -102,18 +109,16 @@ namespace Kr4.ViewModel
                         case AddStar:
                             if (Name != "" && SpectralClasses != null)
                             {
-                                DatabaseLocator.Context.Stars.Add(new Star()
+                                DatabaseLocator.Context!.Stars.Add(new Star()
                                 {
                                     Name = this.Name, Age = this.Age, DistanceFromEarth = this.DistanceFromEarth,
                                     Class = this.SpectralClass, Luminosity = this.Luminosity
                                 });
-                                Xceed.Wpf.Toolkit.MessageBox.Show("Object created successfully", "",
-                                    MessageBoxButton.OK, MessageBoxImage.Asterisk);
+                                messageService.SendMessage("Object created successfully");
                             }
                             else
                             {
-                                Xceed.Wpf.Toolkit.MessageBox.Show("Fill out the required field Name and Spectral Class",
-                                    "", MessageBoxButton.OK, MessageBoxImage.Error);
+                               messageService.SendMessageError("Fill out the required field Name and Spectral Class");
                                 return;
                             }
 
@@ -121,15 +126,13 @@ namespace Kr4.ViewModel
                         case AddSpectralClass:
                             if (Name != "")
                             {
-                                DatabaseLocator.Context.SpectralClasses.Add(new SpectralClass() { Name = this.Name });
+                                DatabaseLocator.Context!.SpectralClasses.Add(new SpectralClass() { Name = this.Name });
                                 ChangedList = nameof(SpectralClasses);
-                                Xceed.Wpf.Toolkit.MessageBox.Show("Object created successfully", "",
-                                    MessageBoxButton.OK, MessageBoxImage.Asterisk);
+                                messageService.SendMessage("Object created successfully");
                             }
                             else
                             {
-                                Xceed.Wpf.Toolkit.MessageBox.Show("Fill out the required field Name", "",
-                                    MessageBoxButton.OK, MessageBoxImage.Error);
+                                messageService.SendMessageError("Fill out the required field Name");
                                 return;
 
                             }
@@ -138,18 +141,16 @@ namespace Kr4.ViewModel
                         case AddGalaxy:
                             if (Name != "" && GalaxyType != null )
                             {
-                                DatabaseLocator.Context.Galaxy.Add(new Galaxy()
+                                DatabaseLocator.Context!.Galaxys.Add(new Galaxy()
                                 {
                                     Name = this.Name, Type = GalaxyType, DistanceFromEarth = this.DistanceFromEarth,
                                     Age = this.Age
                                 });
-                                Xceed.Wpf.Toolkit.MessageBox.Show("Object created successfully", "",
-                                    MessageBoxButton.OK, MessageBoxImage.Asterisk);
+                                messageService.SendMessage("Object created successfully");
                             }
                             else
                             {
-                                Xceed.Wpf.Toolkit.MessageBox.Show("Fill out the required field Name and Type", "",
-                                    MessageBoxButton.OK, MessageBoxImage.Error);
+                                messageService.SendMessageError("Fill out the required field Name and Type");
                                 return;
                             }
 
@@ -158,14 +159,12 @@ namespace Kr4.ViewModel
                             if (Name != "")
                             {
                                 ChangedList = nameof(GalaxyTypes);
-                                DatabaseLocator.Context.GalaxysTypes.Add(new GalaxyType() { Name = this.Name });
-                                Xceed.Wpf.Toolkit.MessageBox.Show("Object created successfully", "",
-                                    MessageBoxButton.OK, MessageBoxImage.Asterisk);
+                                DatabaseLocator.Context!.GalaxysTypes.Add(new GalaxyType() { Name = this.Name });
+                                messageService.SendMessage("Object created successfully");
                             }
                             else
                             {
-                                Xceed.Wpf.Toolkit.MessageBox.Show("Fill out the required field Name", "",
-                                    MessageBoxButton.OK, MessageBoxImage.Error);
+                                messageService.SendMessageError("Fill out the required field Name");
                                 return;
                             }
 
@@ -173,7 +172,7 @@ namespace Kr4.ViewModel
                     }
                  //   eventAgregator.NotifyDBChanged();
                    
-                    DatabaseLocator.Context.SaveChanges();
+                    DatabaseLocator.Context!.SaveChanges();
                  if(ChangedList != "")
                     RaisePropertiesChanged(ChangedList);
                  clearFields();

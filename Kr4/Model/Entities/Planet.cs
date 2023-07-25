@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Kr4.Model.Entities
 {
-    public class Planet : ViewModelBase, IAstronomicalObject, ICloneable
+    public class Planet : ViewModelBase, IAstronomicalObject
     {
         public int Id { get; set; }
         public double Size { get; set; }

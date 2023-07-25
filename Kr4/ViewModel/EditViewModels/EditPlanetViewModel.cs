@@ -10,17 +10,21 @@ using AutoMapper;
 using DevExpress.Mvvm;
 using Kr4.Model.Entities;
 using Kr4.Services;
+using Kr4.Services.Interface;
 using Kr4.ViewModel.EditViewModels.Interface;
 using Nelibur.ObjectMapper;
 
 
 namespace Kr4.ViewModel.EditViewModels
 {
-    public class EditPlanetViewModel : ViewModelBase , ICloseWindows
+    public class EditPlanetViewModel : ViewModelBase , IEditPlanetViewModel
     {
         private Planet planet;
         private Planet defaultPlanet;
         private Action close;
+
+        private IMessageService messageService;
+
 
         public string Name
         {
@@ -87,8 +91,9 @@ namespace Kr4.ViewModel.EditViewModels
             }
         }
 
-        public EditPlanetViewModel(Planet planet, Action close)
+        public EditPlanetViewModel(Planet planet, Action close, IMessageService messageService)
         {
+            this.messageService = messageService;
             TinyMapper.Bind<Planet, Planet>();
             this.planet = planet;
             defaultPlanet = TinyMapper.Map<Planet>(planet);
@@ -132,7 +137,13 @@ namespace Kr4.ViewModel.EditViewModels
 
         public bool CanClose()
         {
-            return Name != "";
+            if(Name != "")
+                return true;
+            else
+            {
+                messageService.SendMessageError("Fill in required fields");
+                return false;
+            }
         }
     }
 }
